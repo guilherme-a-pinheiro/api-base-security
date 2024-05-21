@@ -7,6 +7,7 @@ import com.pinheiro.loginauthapi.dtos.ResponseDTO;
 import com.pinheiro.loginauthapi.infra.security.TokenService;
 import com.pinheiro.loginauthapi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,14 +28,18 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity register (@RequestBody RegisterRequestDTO data){
-        if (userRepository.findByEmail(data.email()) != null){
-            return ResponseEntity.badRequest().build();
-        }
+        Optional<User> user = userRepository.findByEmail(data.email());
 
-        String encryptedPassword = passwordEncoder.encode(data.password());
-        User newUser = new User(data.name(), data.email(), encryptedPassword);
-        userRepository.save(newUser);
-        return ResponseEntity.ok().build();
+       if (user.isEmpty()){
+           String encryptedPassword = passwordEncoder.encode(data.password());
+           User newUser = new User(data.name(), data.email(), encryptedPassword);
+           userRepository.save(newUser);
+           String token = tokenService.generateToken(newUser);
+
+           return ResponseEntity.ok().build();
+       }
+
+       return ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/login")
