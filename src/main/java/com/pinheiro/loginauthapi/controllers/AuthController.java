@@ -9,7 +9,6 @@ import com.pinheiro.loginauthapi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +35,7 @@ public class AuthController {
            userRepository.save(newUser);
            String token = tokenService.generateToken(newUser);
 
-           return ResponseEntity.ok().build();
+           return ResponseEntity.ok("User " + newUser.getName() + " criado com sucesso!");
        }
 
        return ResponseEntity.badRequest().build();
