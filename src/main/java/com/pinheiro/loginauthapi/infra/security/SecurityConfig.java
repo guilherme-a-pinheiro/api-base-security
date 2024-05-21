@@ -19,10 +19,7 @@ public class SecurityConfig {
 
     @Autowired
     private SecurityFilter securityFilter;
-
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
